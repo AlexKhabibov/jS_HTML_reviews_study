@@ -17,9 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             reviews.push(review);
             localStorage.setItem(product, JSON.stringify(reviews));
+            errorDiv.textContent = 'Отзыв отправлен!'
+            
         } else {
             errorDiv.textContent = 'Все поля должны быть заполнены';
         }
+
+      
     });
 });
 

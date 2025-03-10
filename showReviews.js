@@ -1,72 +1,67 @@
-
 const listProducts = document.querySelector(".reviews");
 
-for (let i = 0; i < localStorage.length; i++) {
-    let product = localStorage.key(i);
-    let reviewSet = JSON.parse(localStorage.getItem(product));
+document.addEventListener("DOMContentLoaded", () => {
+    for (let i = 0; i < localStorage.length; i++) {
+        const product = localStorage.key(i);
+        const reviewSet = JSON.parse(localStorage.getItem(product));
 
-    //добавление списка продуктов
+        if (!Array.isArray(reviewSet)) continue; // Проверка на корректность данных
+
+        const divProduct = createProductBlock(product, reviewSet);
+        listProducts.appendChild(divProduct);
+    }
+});
+
+function createProductBlock(product, reviewSet) {
     const divProduct = document.createElement("div");
-    listProducts.insertAdjacentElement("beforeend", divProduct);
-    divProduct.insertAdjacentHTML(
-        "beforeend",
-        `<h2>${product} <button onclick="openReview(this)">показать отзывы</button> </h2>`
-    );
+    divProduct.innerHTML = `<h2>${product} <button class="mdc-button mdc-button--raised" onclick="toggleReviews(this)">Показать отзывы</button></h2>`;
 
-    //добавление блока для отзывов
     const divReviews = document.createElement("div");
     divReviews.hidden = true;
-    divProduct.insertAdjacentElement("beforeend", divReviews);
+    divProduct.appendChild(divReviews);
 
-    //заполнение отзывов
-    reviewSet.forEach((element) => {
-        const newReview = document.createElement("div");
-        divReviews.insertAdjacentElement("beforeend", newReview);
-
-        const reviewText = document.createElement("span");
-        reviewText.textContent = element;
-        newReview.insertAdjacentElement("beforeend", reviewText);
-
-        //кнопка удаления
-        newReview.insertAdjacentElement(
-            "beforeend",
-            deleteReviewBtn(reviewText, reviewSet, product)
-        );
+    reviewSet.forEach((review) => {
+        divReviews.appendChild(createReviewBlock(review, reviewSet, product));
     });
+
+    return divProduct;
 }
 
-//создание кнопки удаления отзыва
-function deleteReviewBtn(textReview, setReview, product) {
+function createReviewBlock(reviewText, reviewSet, product) {
+    const reviewBlock = document.createElement("div");
+    const reviewSpan = document.createElement("span");
+    reviewSpan.textContent = reviewText;
+
+    reviewBlock.appendChild(reviewSpan);
+    reviewBlock.appendChild(createDeleteButton(reviewSpan, reviewSet, product));
+
+    return reviewBlock;
+}
+
+function createDeleteButton(reviewSpan, reviewSet, product) {
     const delBtn = document.createElement("button");
+    delBtn.classList.add("mdc-button", "mdc-button--raised", "del-review");
     delBtn.textContent = "Удалить";
 
     delBtn.addEventListener("click", () => {
-        if (setReview.length > 1) {
-            let indexItem = setReview.findIndex(
-                (element) => element === textReview.textContent
-            );
-            setReview.splice(indexItem, 1);
-            localStorage.setItem(product, JSON.stringify(setReview));
-        } else {
-            localStorage.removeItem(product);
-            delBtn.parentElement.parentElement.parentElement.remove();
+        const index = reviewSet.indexOf(reviewSpan.textContent);
+        if (index > -1) {
+            reviewSet.splice(index, 1);
+            if (reviewSet.length > 0) {
+                localStorage.setItem(product, JSON.stringify(reviewSet));
+            } else {
+                localStorage.removeItem(product);
+                delBtn.closest("div").parentElement.remove();
+            }
         }
-        textReview.parentElement.remove();
-        delBtn.remove();
+        reviewSpan.parentElement.remove();
     });
 
     return delBtn;
 }
 
-//функция открытия-скрытия блока отзывов
-function openReview(elem) {
-    let hiddenElement = elem.parentElement.parentElement.lastChild;
-    if (hiddenElement.hidden) {
-        hiddenElement.hidden = false;
-        elem.textContent = "скрыть отзывы";
-    } else {
-        hiddenElement.hidden = true;
-        elem.textContent = "показать отзывы";
-    }
+function toggleReviews(button) {
+    const reviewBlock = button.closest("div").querySelector("div");
+    reviewBlock.hidden = !reviewBlock.hidden;
+    button.textContent = reviewBlock.hidden ? "Показать отзывы" : "Скрыть отзывы";
 }
-

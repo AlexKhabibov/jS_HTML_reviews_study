@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Review</title>
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="./addReview.js" defer></script>
 </head>
@@ -14,12 +16,12 @@
         <h1 class="title">Оставьте Ваш отзыв</h1>
         <input class="input-product" type="text" placeholder="Введите название продукта" required>
         <textarea class="user-review" rows="5" placeholder="Введите Ваш отзыв" required></textarea>
-        <button class="add-review">Добавить отзыв</button>
-        <a href="showReviews.html" class="link-review">Посмотреть отзывы</a>
+        <button class="mdc-button mdc-button--raised add-review">Добавить отзыв</button>
+        <a href="showReviews.html" class="link-review">Страничка с отзывами</a>
         <div class="error-msg"></div>
     </form>
 
-   
+
 </body>
 
 </html>
